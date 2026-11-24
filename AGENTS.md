@@ -32,5 +32,5 @@ use the editor.
 ## Architecture
 - Business rules (orders, fees, listing expiry, payouts) live in SECURITY DEFINER SQL functions; the UI calls them via rpc so clients cannot bypass rules.
 - Payment confirmation only happens in the webhook at src/routes/api/public/payments/webhook.ts; never mark orders paid from the browser.
-- Shipping quotes go through src/lib/shipping.functions.ts, the single integration point for the future carrier API.
+- Shipping price comes from the shipping_rates table via SQL quote_shipping/cep_region (orders get it in a trigger); a future carrier API should replace those functions, keeping src/lib/shipping.ts as the UI entry point.
 - Public pages show only listings.seller_name; seller personal data stays in profiles (owner-only RLS).

@@ -9,6 +9,7 @@ import { Avatar, Cover } from "@/components/app/Cover";
 import { ExpiryBadge } from "@/components/app/BookCard";
 import { brl, errMsg } from "@/lib/format";
 import { useSession } from "@/lib/session";
+import { useSavedCep, useShipping } from "@/lib/shipping";
 
 export const Route = createFileRoute("/livro/$id")({
   head: () => ({
@@ -28,6 +29,8 @@ function Detail() {
   const { id } = Route.useParams();
   const { user } = useSession();
   const navigate = useNavigate();
+  const [cep] = useSavedCep();
+  const shippingFor = useShipping(cep);
   const [busy, setBusy] = useState<"buy" | "chat" | null>(null);
   const q = useQuery({
     queryKey: ["listing", id, user?.id],
@@ -85,7 +88,12 @@ function Detail() {
         <Truck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
         <div>
           <p className="font-semibold text-foreground">{l.weight_g}g</p>
-          <p className="text-muted-foreground">Cotação de frete ainda indisponível. Após a compra, combine o envio com o vendedor pelo chat.</p>
+          <p className="text-muted-foreground">
+            {shippingFor(l.weight_g) != null
+              ? <>Frete para {cep}: <b className="text-foreground">{brl(shippingFor(l.weight_g)!)}</b>. O valor final usa o CEP do seu cadastro.</>
+              : cep ? "Não há frete padrão para esse peso ou CEP; combine o envio com o vendedor pelo chat."
+              : "Informe seu CEP na vitrine para ver o frete."}
+          </p>
         </div>
       </div>
 

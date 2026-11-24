@@ -1,5 +1,2 @@
-- [x] Corrigir foco/404 no cadastro
-- [x] CPF fictício no preview
-- [x] Campo autor opcional
-- [x] Teste de pagamento
-- [ ] Escolher transportadora para cotação de frete (aguarda decisão do usuário)
+- [x] Tabela de frete padrão por região e peso
+- [ ] Transportadora via API (aguarda escolha do usuário)

@@ -296,6 +296,27 @@ export type Database = {
         }
         Relationships: []
       }
+      shipping_rates: {
+        Row: {
+          id: string
+          max_weight_g: number
+          price_cents: number
+          region: string
+        }
+        Insert: {
+          id?: string
+          max_weight_g: number
+          price_cents: number
+          region: string
+        }
+        Update: {
+          id?: string
+          max_weight_g?: number
+          price_cents?: number
+          region?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -328,6 +349,7 @@ export type Database = {
           store_name: string
         }[]
       }
+      cep_region: { Args: { _cep: string }; Returns: string }
       create_order: { Args: { _listing_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -339,6 +361,10 @@ export type Database = {
       mark_payout: {
         Args: { _gateway_fee_cents: number; _order_id: string }
         Returns: undefined
+      }
+      quote_shipping: {
+        Args: { _cep: string; _weight_g: number }
+        Returns: number
       }
       renew_listing: { Args: { _id: string }; Returns: undefined }
       start_conversation: { Args: { _listing_id: string }; Returns: string }

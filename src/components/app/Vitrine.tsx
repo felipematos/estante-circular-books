@@ -5,22 +5,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { BookCard, type ListingRow } from "./BookCard";
 import { Empty, ErrorBox, Shell } from "./Shell";
 import { maskCep } from "@/lib/format";
+import { useSavedCep, useShipping } from "@/lib/shipping";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Sort = "perto" | "preco" | "recentes";
-const CEP_KEY = "sebo:cep";
 
 export function Vitrine({ autoFocus = false }: { autoFocus?: boolean }) {
   const [q, setQ] = useState("");
   const [debounced, setDebounced] = useState("");
   const [sort, setSort] = useState<Sort>("perto");
-  const [cep, setCep] = useState("");
+  const [cep, setCep, saveCep] = useSavedCep();
+  const shippingFor = useShipping(cep);
   const [editingCep, setEditingCep] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setCep(localStorage.getItem(CEP_KEY) ?? "");
     if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
   useEffect(() => {
@@ -79,7 +79,7 @@ export function Vitrine({ autoFocus = false }: { autoFocus?: boolean }) {
         <span className="text-muted-foreground">Entregar em:</span>
         {editingCep ? (
           <form
-            onSubmit={(e) => { e.preventDefault(); localStorage.setItem(CEP_KEY, cep); setEditingCep(false); }}
+            onSubmit={(e) => { e.preventDefault(); saveCep(cep); setEditingCep(false); }}
             className="flex items-center gap-2"
           >
             <input
@@ -124,7 +124,7 @@ export function Vitrine({ autoFocus = false }: { autoFocus?: boolean }) {
             action={{ to: "/vender", label: "Anunciar um livro" }}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-6">{items.map((l) => <BookCard key={l.id} l={l} />)}</div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-6">{items.map((l) => <BookCard key={l.id} l={l} shipping={shippingFor(l.weight_g)} />)}</div>
         )}
       </section>
     </Shell>

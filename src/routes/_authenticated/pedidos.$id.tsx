@@ -89,9 +89,9 @@ function OrderPage() {
             <>
               <div className="rounded-[20px] bg-muted p-4 text-sm">
                 <div className="flex justify-between"><span className="text-muted-foreground">Livro</span><span className="font-semibold text-foreground">{brl(o.price_cents)}</span></div>
-                <div className="mt-2 flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span className="text-right text-foreground">Cotação ainda indisponível · combine com o vendedor</span></div>
+                <div className="mt-2 flex justify-between gap-3"><span className="text-muted-foreground">Frete</span><span className="text-right text-foreground">{o.shipping_cents != null ? brl(o.shipping_cents) : "Sem frete padrão · combine com o vendedor"}</span></div>
               </div>
-              <button onClick={() => setPaying(true)} className="mt-4 w-full rounded-full bg-primary py-4 font-bold text-primary-foreground">Pagar {brl(o.price_cents)}</button>
+              <button onClick={() => setPaying(true)} className="mt-4 w-full rounded-full bg-primary py-4 font-bold text-primary-foreground">Pagar {brl(o.price_cents + (o.shipping_cents ?? 0))}</button>
               <button onClick={() => { if (confirm("Cancelar este pedido? O livro volta para a vitrine.")) update("cancelled"); }} className="mt-2 w-full py-3 text-sm font-semibold text-muted-foreground">Cancelar pedido</button>
             </>
           )}
@@ -106,6 +106,7 @@ function OrderPage() {
             <span className="font-bold text-foreground">Você recebe líquido</span>
             <span className="rounded-full bg-primary px-4 py-1.5 font-bold text-primary-foreground">{o.gateway_fee_cents == null ? "até " : ""}{brl(fees.net)}</span>
           </div>
+          {o.shipping_cents != null && <p className="mt-2 text-xs text-muted-foreground">+ Frete pago pelo comprador: {brl(o.shipping_cents)} (repassado a você para o envio)</p>}
           <p className="mt-2 text-xs text-muted-foreground">Repasse: {o.payout_status === "paid" ? `feito em ${new Date(o.payout_at!).toLocaleDateString("pt-BR")}` : "pendente — feito via Pix após o pagamento ser aprovado"}</p>
         </section>
       )}

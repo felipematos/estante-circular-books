@@ -14,7 +14,7 @@ export function ExpiryBadge({ expiresAt }: { expiresAt: string }) {
   return <span className={cn("rounded-full px-2.5 py-1 text-[11px] font-semibold", tone)}>Expira em {d}d</span>;
 }
 
-export function BookCard({ l }: { l: ListingRow }) {
+export function BookCard({ l, shipping }: { l: ListingRow; shipping?: number | null }) {
   return (
     <Link to="/livro/$id" params={{ id: l.id }} className="group block focus-visible:outline-none">
       <div className="relative">
@@ -24,7 +24,7 @@ export function BookCard({ l }: { l: ListingRow }) {
       <p className="mt-2.5 text-lg font-extrabold text-foreground">{brl(l.price_cents)}</p>
       <p className="line-clamp-2 text-sm text-foreground">{l.title}</p>
       {l.author && <p className="truncate text-xs text-muted-foreground">{l.author}</p>}
-      <p className="mt-0.5 text-xs font-medium text-primary">{l.weight_g}g | Frete a calcular</p>
+      <p className="mt-0.5 text-xs font-medium text-primary">{l.weight_g}g | {shipping != null ? `Frete calculado ${brl(shipping)}` : "Frete a calcular"}</p>
       <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground"><Avatar name={l.seller_name} /> {l.seller_name}</p>
     </Link>
   );
