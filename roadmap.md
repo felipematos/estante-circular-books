@@ -1,0 +1,2 @@
+- [ ] Corrigir erro 404 ao completar cadastro de vendedor
+- [ ] Testar telas em 393x764
