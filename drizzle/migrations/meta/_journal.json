@@ -36,6 +36,13 @@
       "when": 1795539675750,
       "tag": "0004_shipping_rates",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795540849884,
+      "tag": "0005_shipping_rates_scoped_read",
+      "breakpoints": true
     }
   ]
 }
