@@ -9,7 +9,7 @@ import { brl, computeFees, coverUrl, errMsg } from "@/lib/format";
 import { prepareCover } from "@/lib/image";
 import { Loading } from "./Shell";
 
-type Initial = { id: string; title: string; price_cents: number; weight_g: number; cover_path: string };
+type Initial = { id: string; title: string; author: string; price_cents: number; weight_g: number; cover_path: string };
 
 export function ListingForm({ initial }: { initial?: Initial }) {
   const { user } = useSession();
@@ -17,6 +17,7 @@ export function ListingForm({ initial }: { initial?: Initial }) {
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(initial?.title ?? "");
+  const [author, setAuthor] = useState(initial?.author ?? "");
   const [cents, setCents] = useState(initial?.price_cents ?? 0);
   const [weight, setWeight] = useState(initial ? String(initial.weight_g) : "");
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -68,7 +69,7 @@ export function ListingForm({ initial }: { initial?: Initial }) {
         const up = await supabase.storage.from("covers").upload(cover_path, blob, { contentType: "image/jpeg" });
         if (up.error) throw up.error;
       }
-      const values = { title: title.trim(), price_cents: cents, weight_g: w, cover_path };
+      const values = { title: title.trim(), author: author.trim().slice(0, 120), price_cents: cents, weight_g: w, cover_path };
       const res = initial
         ? await supabase.from("listings").update(values).eq("id", initial.id).select("id").single()
         : await supabase.from("listings").insert({ ...values, seller_id: user!.id }).select("id").single();
@@ -120,8 +121,11 @@ export function ListingForm({ initial }: { initial?: Initial }) {
       <Err k="cover" />
 
       <label className="mt-6 block text-sm text-muted-foreground" htmlFor="title">Título do livro</label>
-      <input id="title" className={`${field} mt-2`} maxLength={160} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Torto Arado — Itamar Vieira Junior" />
+      <input id="title" className={`${field} mt-2`} maxLength={160} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex.: Torto Arado" />
       <Err k="title" />
+
+      <label className="mt-6 block text-sm text-muted-foreground" htmlFor="author">Autor (opcional)</label>
+      <input id="author" className={`${field} mt-2`} maxLength={120} value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Ex.: Itamar Vieira Junior" />
 
       <label className="mt-6 block text-sm text-muted-foreground" htmlFor="price">Preço de venda (R$)</label>
       <div className="mt-2 flex items-center gap-2 rounded-full border-2 border-primary px-5 py-3.5">

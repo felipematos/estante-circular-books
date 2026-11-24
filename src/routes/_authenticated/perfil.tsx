@@ -8,6 +8,7 @@ import { Loading, Shell } from "@/components/app/Shell";
 import { useSession } from "@/lib/session";
 import { errMsg, maskCep } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { isTestPayments } from "@/lib/stripe";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
   head: () => ({ meta: [{ title: "Perfil · Sebo Livre" }, { name: "description", content: "Seus dados de comprador e vendedor." }, { property: "og:title", content: "Perfil · Sebo Livre" }, { property: "og:description", content: "Seus dados de comprador e vendedor." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -17,6 +18,19 @@ export const Route = createFileRoute("/_authenticated/perfil")({
 const empty = { full_name: "", phone: "", account_type: "pf", document: "", store_name: "", pix_key: "", cep: "", street: "", number: "", complement: "", district: "", city: "", state: "" };
 type Form = typeof empty;
 
+function missing(f: Form) {
+  const m: string[] = [];
+  if (digits(f.phone).length < 10) m.push("telefone");
+  if (digits(f.cep).length !== 8) m.push("CEP");
+  if (!f.street) m.push("rua");
+  if (!f.number) m.push("número");
+  if (!f.city) m.push("cidade");
+  if (f.state.length !== 2) m.push("UF");
+  if (![11, 14].includes(digits(f.document).length)) m.push(f.account_type === "pf" ? "CPF" : "CNPJ");
+  if (!f.pix_key) m.push("chave Pix");
+  if (f.account_type === "pj" && !f.store_name) m.push("nome da loja");
+  return m;
+}
 function digits(v: string) { return v.replace(/\D/g, ""); }
 function validCpf(c: string) {
   if (c.length !== 11 || /^(\d)\1+$/.test(c)) return false;
@@ -28,6 +42,10 @@ function validCnpj(c: string) {
   const calc = (n: number) => { const w = n === 12 ? [5,4,3,2,9,8,7,6,5,4,3,2] : [6,5,4,3,2,9,8,7,6,5,4,3,2]; let s = 0; for (let i = 0; i < n; i++) s += Number(c[i]) * w[i]!; const r = s % 11; return r < 2 ? 0 : 11 - r; };
   return calc(12) === Number(c[12]) && calc(13) === Number(c[13]);
 }
+
+const L = ({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) => (
+  <label className={cn("grid gap-1.5 text-sm text-muted-foreground", className)}>{label}{children}</label>
+);
 
 function Profile() {
   const { user } = useSession();
@@ -63,7 +81,8 @@ function Profile() {
     e.preventDefault();
     if (f.full_name.trim().length < 3) return void toast.error("Informe seu nome completo");
     const doc = digits(f.document);
-    if (doc && !(f.account_type === "pf" ? validCpf(doc) : validCnpj(doc))) return void toast.error(f.account_type === "pf" ? "CPF inválido" : "CNPJ inválido");
+    // Preview/test mode accepts fictitious documents (length still enforced) so the flow can be tried.
+    if (doc && !isTestPayments() && !(f.account_type === "pf" ? validCpf(doc) : validCnpj(doc))) return void toast.error(f.account_type === "pf" ? "CPF inválido" : "CNPJ inválido");
     if (f.cep && digits(f.cep).length !== 8) return void toast.error("CEP inválido");
     if (f.state && !/^[A-Za-z]{2}$/.test(f.state)) return void toast.error("UF deve ter 2 letras");
     setSaving(true);
@@ -74,7 +93,9 @@ function Profile() {
     if (error) return void toast.error(errMsg(error));
     qc.invalidateQueries({ queryKey: ["profile"] });
     q.refetch();
-    toast.success(data.is_seller ? "Cadastro salvo. Você já pode anunciar!" : "Cadastro salvo.");
+    if (data.is_seller) return void toast.success("Cadastro salvo. Você já pode anunciar!");
+    const miss = missing(clean);
+    toast.success(miss.length ? `Cadastro salvo. Para vender, falta: ${miss.join(", ")}.` : "Cadastro salvo.");
   };
 
   const signOut = async () => {
@@ -86,9 +107,6 @@ function Profile() {
   if (q.isLoading) return <Shell title="Perfil"><Loading /></Shell>;
   const isSeller = q.data?.p?.is_seller;
   const input = "w-full rounded-full bg-muted px-5 py-3.5 text-base text-foreground outline-none ring-primary focus:ring-2";
-  const L = ({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) => (
-    <label className={cn("grid gap-1.5 text-sm text-muted-foreground", className)}>{label}{children}</label>
-  );
 
   return (
     <Shell title="Perfil">

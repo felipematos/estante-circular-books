@@ -78,6 +78,7 @@ function Detail() {
       </div>
       <p className="mt-5 text-3xl font-extrabold text-foreground">{brl(l.price_cents)}</p>
       <h2 className="mt-1 text-xl font-semibold text-foreground">{l.title}</h2>
+      {l.author && <p className="text-sm text-muted-foreground">{l.author}</p>}
       <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><Avatar name={l.seller_name} /> Vendido por {l.seller_name}</p>
 
       <div className="mt-5 flex items-start gap-3 rounded-[20px] bg-muted p-4 text-sm">

@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Architecture
+- Business rules (orders, fees, listing expiry, payouts) live in SECURITY DEFINER SQL functions; the UI calls them via rpc so clients cannot bypass rules.
+- Payment confirmation only happens in the webhook at src/routes/api/public/payments/webhook.ts; never mark orders paid from the browser.
+- Shipping quotes go through src/lib/shipping.functions.ts, the single integration point for the future carrier API.
+- Public pages show only listings.seller_name; seller personal data stays in profiles (owner-only RLS).

@@ -4,7 +4,7 @@ import { Avatar, Cover } from "./Cover";
 import { cn } from "@/lib/utils";
 
 export type ListingRow = {
-  id: string; title: string; price_cents: number; weight_g: number; cover_path: string;
+  id: string; title: string; author?: string; price_cents: number; weight_g: number; cover_path: string;
   seller_name: string; expires_at: string; created_at: string; seller_cep_prefix?: string;
 };
 
@@ -23,6 +23,7 @@ export function BookCard({ l }: { l: ListingRow }) {
       </div>
       <p className="mt-2.5 text-lg font-extrabold text-foreground">{brl(l.price_cents)}</p>
       <p className="line-clamp-2 text-sm text-foreground">{l.title}</p>
+      {l.author && <p className="truncate text-xs text-muted-foreground">{l.author}</p>}
       <p className="mt-0.5 text-xs font-medium text-primary">{l.weight_g}g | Frete a calcular</p>
       <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground"><Avatar name={l.seller_name} /> {l.seller_name}</p>
     </Link>

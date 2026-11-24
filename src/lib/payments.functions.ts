@@ -49,10 +49,8 @@ export const createOrderCheckout = createServerFn({ method: "POST" })
         customer,
         line_items: [{
           quantity: 1,
-          price_data: { currency: "brl", unit_amount: amount, product_data: { name: `Livro usado: ${order.title}`.slice(0, 250), tax_code: "txcd_99999999" } },
+          price_data: { currency: "brl", unit_amount: amount, product_data: { name: `Livro usado: ${order.title}`.slice(0, 250) } },
         }],
-        automatic_tax: { enabled: true },
-        customer_update: { address: "auto" },
         payment_intent_data: { description: `Livro usado: ${order.title}`.slice(0, 250), metadata: { order_id: order.id } },
         metadata: { order_id: order.id, userId, managed_payments: "false" },
         return_url: `${origin}/pedidos/${order.id}?pago=1`,

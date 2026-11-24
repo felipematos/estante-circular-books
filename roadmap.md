@@ -1,2 +1,5 @@
-- [ ] Corrigir erro 404 ao completar cadastro de vendedor
-- [ ] Testar telas em 393x764
+- [x] Corrigir foco/404 no cadastro
+- [x] CPF fictício no preview
+- [x] Campo autor opcional
+- [x] Teste de pagamento
+- [ ] Escolher transportadora para cotação de frete (aguarda decisão do usuário)

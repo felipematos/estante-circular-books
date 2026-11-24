@@ -57,6 +57,7 @@ export type Database = {
       }
       listings: {
         Row: {
+          author: string
           cover_path: string
           created_at: string
           expires_at: string
@@ -70,6 +71,7 @@ export type Database = {
           weight_g: number
         }
         Insert: {
+          author?: string
           cover_path: string
           created_at?: string
           expires_at?: string
@@ -83,6 +85,7 @@ export type Database = {
           weight_g: number
         }
         Update: {
+          author?: string
           cover_path?: string
           created_at?: string
           expires_at?: string

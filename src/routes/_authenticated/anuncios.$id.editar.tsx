@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/anuncios/$id/editar")({
 
 function Edit() {
   const { id } = Route.useParams();
-  const q = useQuery({ queryKey: ["listing-edit", id], queryFn: async () => (await supabase.from("listings").select("id,title,price_cents,weight_g,cover_path,status").eq("id", id).maybeSingle()).data });
+  const q = useQuery({ queryKey: ["listing-edit", id], queryFn: async () => (await supabase.from("listings").select("id,title,author,price_cents,weight_g,cover_path,status").eq("id", id).maybeSingle()).data });
   return (
     <Shell title="Editar anúncio" back>
       {q.isLoading ? <Loading /> : !q.data ? <Empty title="Anúncio não encontrado" /> : q.data.status === "sold" ? <Empty title="Este livro já foi vendido" text="Anúncios vendidos não podem ser editados." /> : <ListingForm initial={q.data} />}

@@ -33,11 +33,11 @@ export function Vitrine({ autoFocus = false }: { autoFocus?: boolean }) {
     queryFn: async () => {
       let req = supabase
         .from("listings")
-        .select("id,title,price_cents,weight_g,cover_path,seller_name,expires_at,created_at,seller_cep_prefix")
+        .select("id,title,author,price_cents,weight_g,cover_path,seller_name,expires_at,created_at,seller_cep_prefix")
         .eq("status", "active")
         .gt("expires_at", new Date().toISOString())
         .limit(60);
-      if (debounced) req = req.ilike("title", `%${debounced.replace(/[%_,()]/g, " ")}%`);
+      if (debounced) { const t = debounced.replace(/[%_,()*.]/g, " "); req = req.or(`title.ilike.%${t}%,author.ilike.%${t}%`); }
       req = sort === "preco" ? req.order("price_cents", { ascending: true }) : req.order("created_at", { ascending: false });
       const { data, error } = await req;
       if (error) throw error;

@@ -1,0 +1,1 @@
+alter table public.listings add column author text not null default '' check (length(author) <= 120);
