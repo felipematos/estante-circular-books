@@ -1,0 +1,1 @@
+alter table public.orders add column payment_session_id text, add column payment_env text, add column paid_at timestamptz;

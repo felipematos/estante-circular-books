@@ -62,6 +62,7 @@ export type Database = {
           expires_at: string
           id: string
           price_cents: number
+          seller_cep_prefix: string
           seller_id: string
           seller_name: string
           status: string
@@ -74,6 +75,7 @@ export type Database = {
           expires_at?: string
           id?: string
           price_cents: number
+          seller_cep_prefix?: string
           seller_id: string
           seller_name?: string
           status?: string
@@ -86,6 +88,7 @@ export type Database = {
           expires_at?: string
           id?: string
           price_cents?: number
+          seller_cep_prefix?: string
           seller_id?: string
           seller_name?: string
           status?: string
@@ -136,6 +139,9 @@ export type Database = {
           gateway_fee_cents: number | null
           id: string
           listing_id: string
+          paid_at: string | null
+          payment_env: string | null
+          payment_session_id: string | null
           payout_at: string | null
           payout_status: string
           platform_fee_cents: number
@@ -164,6 +170,9 @@ export type Database = {
           gateway_fee_cents?: number | null
           id?: string
           listing_id: string
+          paid_at?: string | null
+          payment_env?: string | null
+          payment_session_id?: string | null
           payout_at?: string | null
           payout_status?: string
           platform_fee_cents: number
@@ -192,6 +201,9 @@ export type Database = {
           gateway_fee_cents?: number | null
           id?: string
           listing_id?: string
+          paid_at?: string | null
+          payment_env?: string | null
+          payment_session_id?: string | null
           payout_at?: string | null
           payout_status?: string
           platform_fee_cents?: number
